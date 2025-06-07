@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Clock3</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: Tw Cen MT, Century Gothic, Arial, sans-serif;
+      }
+
+      svg {
+        vertical-align: middle;
+      }
+
+      body {
+        background: #000;
+        min-height: 100vh;
+        overflow: hidden;
+        background: radial-gradient(
+            circle at center,
+            rgba(255, 255, 255, 0.5),
+            rgba(255, 255, 255, 0)
+          ),
+          radial-gradient(circle at left top, #0acbfb, transparent),
+          radial-gradient(circle at right bottom, #38fb6f, transparent);
+      }
+
+      .container {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        filter: url("#gooey");
+      }
+
+      .liquid {
+        position: absolute;
+        top: calc(50% - 25px);
+        left: calc(50% - 25px);
+        background: radial-gradient(circle at top, #03a9f4, transparent),
+          radial-gradient(circle at bottom, #c7eeff, transparent);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        filter: drop-shadow(0 0 5px #003a97) drop-shadow(0 0 10px #54ffe3);
+      }
+
+      #boardMin {
+        position: absolute; /* 確保元素是絕對定位 */
+        top: 50%;
+        left: 50%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle at top, #50fff6, transparent),
+          radial-gradient(circle at bottom, #b2f48c, transparent),
+          radial-gradient(
+            circle,
+            rgb(202, 10, 227) 95%,
+            rgba(36, 60, 197, 0) 100%
+          );
+        border-radius: 50%;
+        transform: translate(-50%, -50%); /* 同樣調整偏移量 */
+      }
+
+      #boardHour {
+        position: absolute; /* 確保元素是絕對定位 */
+        top: 50%;
+        left: 50%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle at top, #2cd5ff, transparent),
+          radial-gradient(circle at bottom, #3e54e4, transparent),
+          radial-gradient(
+            circle,
+            rgb(152, 14, 170) 95%,
+            rgba(36, 60, 197, 0) 100%
+          );
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #secondHand {
+        top: -25px;
+        transform-origin: 50% 325px;
+        background: linear-gradient(
+          45deg,
+          rgba(122, 249, 232, 0.903),
+          rgb(8, 210, 255)
+        );
+      }
+
+      #minuteHand {
+        top: 60px;
+        transform-origin: 50% 240px;
+        background: linear-gradient(
+          45deg,
+          rgba(207, 169, 242, 0.903),
+          rgb(114, 245, 245)
+        );
+      }
+
+      #hourHand {
+        top: 120px;
+        transform-origin: 50% 180px;
+        background: linear-gradient(
+          45deg,
+          rgba(246, 250, 255, 0.547),
+          rgb(2, 112, 255)
+        );
+      }
+
+      #scale1 {
+        filter: none;
+      }
+
+      .mark {
+        position: absolute;
+        top: 45px;
+        left: calc(50% - 2px);
+        width: 4px;
+        height: 4px;
+        background: linear-gradient(
+          45deg,
+          rgba(208, 242, 255, 0.547),
+          rgb(158, 255, 253)
+        );
+        border-radius: 3px;
+        transform: rotate(0deg);
+        transform-origin: 50% 255px;
+        filter: drop-shadow(0 0 5px #003a97) drop-shadow(0 0 10px #54ffe3);
+      }
+
+      #time {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        height: 300px;
+        cursor: pointer;
+        transition: background 1s ease;
+      }
+
+      #time:after {
+        content: "";
+        position: absolute;
+        top: 20%;
+        left: 25%;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #fff;
+        filter: blur(4px) opacity(0);
+        transition: all 0.5s ease;
+      }
+
+      #time:hover:after {
+        filter: blur(20px) opacity(0.6);
+      }
+      #time div {
+        width: 100%;
+        height: 100%;
+        transform: scale(0);
+        filter: blur(100px) opacity(0);
+        transition: all 0.5s ease-in-out;
+      }
+
+      #time div p {
+        display: block;
+        width: 100%;
+        height: 60px;
+        background: linear-gradient(to top, #1793c8, #133497, #1b577f);
+        background-clip: text;
+        font-weight: 600;
+        font-size: 40px;
+        color: transparent;
+        line-height: 60px;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        filter: drop-shadow(0 0 4px rgba(15, 64, 200, 0.361))
+          drop-shadow(0 0 4px #359aee) opacity(0.9);
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      #time div h2 {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: linear-gradient(to top, #07adf5, #45f5da, #defff2);
+        background-clip: text;
+        font-weight: 600;
+        font-size: 90px;
+        letter-spacing: 6px;
+        color: transparent;
+        line-height: 120px;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        filter: drop-shadow(0 0 4px rgba(15, 64, 200, 0.361))
+          drop-shadow(0 0 4px #359aee) opacity(0.9);
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      #yearContent {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        top: 0;
+        left: 0;
+      }
+
+      #yearValue {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(to top, #ffffff, #ffffff);
+        background-clip: text;
+        font-weight: 600;
+        font-size: 300px;
+        color: transparent;
+        line-height: 300px;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        user-select: none;
+        -webkit-user-drag: none;
+        filter: opacity(0.9) blur(2px);
+      }
+
+      #secBlob2,
+      #secBlob3 {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="yearContent">
+      <h1 id="yearValue">20&nbsp;&nbsp;&nbsp;&nbsp;25</h1>
+    </div>
+    <div class="container">
+      <div class="liquid hand" id="secondHand"></div>
+      <svg
+        id="secBlob1"
+        viewBox="0 0 600 600"
+        width="600"
+        height="600"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+      >
+        <g transform="translate(301.7076890769767 293.4623247047201)">
+          <path
+            d="M264.1 -153.3C311.8 -70 298.8 47.5 244.7 140.9C190.5 234.3 95.3 303.7 0.3 303.5C-94.7 303.4 -189.4 233.7 -239.8 142.5C-290.2 51.2 -296.2 -61.6 -248.9 -144.8C-201.5 -228 -100.7 -281.5 3.8 -283.7C108.3 -285.8 216.5 -236.7 264.1 -153.3"
+            fill="url(#secGradient3)"
+          ></path>
+          <path
+            d="M264.1 -153.3C311.8 -70 298.8 47.5 244.7 140.9C190.5 234.3 95.3 303.7 0.3 303.5C-94.7 303.4 -189.4 233.7 -239.8 142.5C-290.2 51.2 -296.2 -61.6 -248.9 -144.8C-201.5 -228 -100.7 -281.5 3.8 -283.7C108.3 -285.8 216.5 -236.7 264.1 -153.3"
+            fill="url(#secGradient2)"
+          ></path>
+          <path
+            d="M264.1 -153.3C311.8 -70 298.8 47.5 244.7 140.9C190.5 234.3 95.3 303.7 0.3 303.5C-94.7 303.4 -189.4 233.7 -239.8 142.5C-290.2 51.2 -296.2 -61.6 -248.9 -144.8C-201.5 -228 -100.7 -281.5 3.8 -283.7C108.3 -285.8 216.5 -236.7 264.1 -153.3"
+            fill="url(#secGradient1)"
+          ></path>
+        </g>
+      </svg>
+
+      <svg
+        id="secBlob2"
+        viewBox="0 0 600 600"
+        width="600"
+        height="600"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+      >
+        <g transform="translate(307.3483358512825 307.3843348172246)">
+          <path
+            d="M241.6 -136.6C293.7 -49.2 303.1 65.6 255.8 151.8C208.4 238 104.2 295.5 3.2 293.7C-97.9 291.8 -195.7 230.7 -249.8 140.6C-304 50.5 -314.4 -68.5 -265.4 -154.1C-216.5 -239.7 -108.3 -291.8 -6.8 -287.9C94.7 -284 189.4 -224 241.6 -136.6"
+            fill="url(#secGradient3)"
+          ></path>
+          <path
+            d="M241.6 -136.6C293.7 -49.2 303.1 65.6 255.8 151.8C208.4 238 104.2 295.5 3.2 293.7C-97.9 291.8 -195.7 230.7 -249.8 140.6C-304 50.5 -314.4 -68.5 -265.4 -154.1C-216.5 -239.7 -108.3 -291.8 -6.8 -287.9C94.7 -284 189.4 -224 241.6 -136.6"
+            fill="url(#secGradient2)"
+          ></path>
+          <path
+            d="M241.6 -136.6C293.7 -49.2 303.1 65.6 255.8 151.8C208.4 238 104.2 295.5 3.2 293.7C-97.9 291.8 -195.7 230.7 -249.8 140.6C-304 50.5 -314.4 -68.5 -265.4 -154.1C-216.5 -239.7 -108.3 -291.8 -6.8 -287.9C94.7 -284 189.4 -224 241.6 -136.6"
+            fill="url(#secGradient1)"
+          ></path>
+        </g>
+      </svg>
+      <svg
+        id="secBlob3"
+        viewBox="0 0 600 600"
+        width="600"
+        height="600"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+      >
+        <g transform="translate(307.3483358512825 307.3843348172246)">
+          <path
+            d="M268.3 -149.8C320.1 -65.2 315.5 57.2 261.4 145.7C207.3 234.3 103.6 289.2 1.6 288.3C-100.5 287.3 -200.9 230.7 -250 145C-299.1 59.3 -296.8 -55.3 -246.5 -139C-196.3 -222.7 -98.1 -275.4 5.1 -278.3C108.3 -281.3 216.5 -234.4 268.3 -149.8"
+            fill="url(#secGradient3)"
+          ></path>
+          <path
+            d="M268.3 -149.8C320.1 -65.2 315.5 57.2 261.4 145.7C207.3 234.3 103.6 289.2 1.6 288.3C-100.5 287.3 -200.9 230.7 -250 145C-299.1 59.3 -296.8 -55.3 -246.5 -139C-196.3 -222.7 -98.1 -275.4 5.1 -278.3C108.3 -281.3 216.5 -234.4 268.3 -149.8"
+            fill="url(#secGradient2)"
+          ></path>
+          <path
+            d="M268.3 -149.8C320.1 -65.2 315.5 57.2 261.4 145.7C207.3 234.3 103.6 289.2 1.6 288.3C-100.5 287.3 -200.9 230.7 -250 145C-299.1 59.3 -296.8 -55.3 -246.5 -139C-196.3 -222.7 -98.1 -275.4 5.1 -278.3C108.3 -281.3 216.5 -234.4 268.3 -149.8"
+            fill="url(#secGradient1)"
+          ></path>
+        </g>
+      </svg>
+
+      <svg
+        viewBox="0 0 600 600"
+        width="600"
+        height="600"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+      >
+        <defs>
+          <radialGradient
+            id="secGradient1"
+            cx="50%"
+            cy="-50%"
+            fr="100%"
+            fx="50%"
+            fy="50%"
+          >
+            <stop offset="0%" stop-color="#20cbff" stop-opacity="0" />
+            <stop offset="100%" stop-color="#20cbff" stop-opacity="1" />
+          </radialGradient>
+          <radialGradient
+            id="secGradient2"
+            cx="50%"
+            cy="150%"
+            fr="100%"
+            fx="50%"
+            fy="50%"
+          >
+            <stop offset="0%" stop-color="#20fd5f" stop-opacity="0" />
+
+            <stop offset="100%" stop-color="#20fd5f" stop-opacity="1" />
+          </radialGradient>
+          <radialGradient id="secGradient3">
+            <stop offset="85%" stop-color="#3f35ff" stop-opacity="1" />
+            <stop offset="100%" stop-color="#031ebb" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="container" id="scale1">
+      <div class="mark"></div>
+    </div>
+
+    <div class="container">
+      <div class="liquid hand" id="minuteHand"></div>
+      <div class="liquid" id="boardMin"></div>
+    </div>
+
+    <div class="container">
+      <div class="liquid hand" id="hourHand"></div>
+      <div class="liquid" id="boardHour"></div>
+    </div>
+
+    <div id="time">
+      <div>
+        <h2 id="hourValue">10</h2>
+        <p id="ampm">PM</p>
+        <h2 id="minuteValue">08</h2>
+      </div>
+    </div>
+
+    <svg
+      id="visual"
+      viewBox="0 0 600 600"
+      width="600"
+      height="600"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      version="1.1"
+    >
+      <g transform="translate(301.7076890769767 293.4623247047201)">
+        <path
+          d="M181.8 -176.7C231.7 -132 265.3 -66 263.3 -2.1C261.2 61.9 223.4 123.7 173.6 172.7C123.7 221.7 61.9 257.9 -1.4 259.2C-64.6 260.6 -129.2 227.2 -179.2 178.2C-229.2 129.2 -264.6 64.6 -266.7 -2.1C-268.8 -68.8 -237.7 -137.7 -187.7 -182.3C-137.7 -227 -68.8 -247.5 -1.4 -246.1C66 -244.7 132 -221.3 181.8 -176.7"
+          fill="#BB004B"
+        ></path>
+      </g>
+    </svg>
+
+    <svg>
+      <filter id="gooey">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+        <feColorMatrix
+          values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 20 -10
+        "
+        />
+      </filter>
+    </svg>
+
+    <script src="https://cdn.jsdelivr.net/npm/kute.js@2.2.4/dist/kute.min.js"></script>
+    <script>
+      const elHour = document.getElementById("hourHand");
+      const elMinute = document.getElementById("minuteHand");
+      const elSecond = document.getElementById("secondHand");
+      const elScale1 = document.getElementById("scale1");
+      const elHourValue = document.getElementById("hourValue");
+      const elMinuteValue = document.getElementById("minuteValue");
+      const elAmpm = document.getElementById("ampm");
+      const elTime = document.getElementById("time");
+      const elHourBoard = document.getElementById("boardHour");
+      const elTimeContent = elTime.firstElementChild;
+
+      const createScale = (scale, count) => {
+        for (let i = 0; i < count; i++) {
+          const mark = document.createElement("div");
+          mark.className = "mark";
+          mark.style.transform = `rotate(${(360 / count) * i}deg)`;
+          scale.appendChild(mark);
+        }
+      };
+
+      createScale(elScale1, 60, 6);
+
+      const clock = () => {
+        const date = new Date();
+        const h = date.getHours();
+        const m = date.getMinutes();
+        const s = date.getSeconds();
+        const ms = date.getMilliseconds();
+        const currentH = h > 12 ? h - 12 : h;
+        elHour.style.transform = `rotate(${h * 30 + m * 0.5}deg)`;
+        elHourValue.innerText = String(currentH).padStart(2, "0");
+        elMinute.style.transform = `rotate(${m * 6 + s * 0.1}deg)`;
+        elMinuteValue.innerText = m < 10 ? "0" + m : m;
+        elSecond.style.transform = `rotate(${s * 6 + ms * 0.006}deg)`;
+        elAmpm.innerText = h >= 12 ? "PM" : "AM";
+      };
+
+      setInterval(clock, 1);
+      clock();
+
+      // 取得當前年份並顯示在頁面上
+      const elYearValue = document.getElementById("yearValue");
+      const elYearContent = document.getElementById("yearContent");
+      const elYear = new Date().getFullYear().toString();
+      const yearFront = elYear.substring(0, 2); // 取得前兩位 "20"
+      const yearBack = elYear.substring(2); // 取得後兩位 "25"
+      elYearValue.innerHTML = `${yearFront}&nbsp;&nbsp;&nbsp;&nbsp;${yearBack}`;
+
+      // 點擊時鐘顯示時間
+      elTime.addEventListener("click", () => {
+        const isVisible = elTimeContent.style.transform.includes("scale(1)");
+        if (isVisible) {
+          elTimeContent.style.transform = `scale(0)`;
+          elTimeContent.style.filter = `blur(100px) opacity(0)`;
+        } else {
+          elTimeContent.style.transform = `scale(1)`;
+          elTimeContent.style.filter = `blur(0px) opacity(1)`;
+        }
+      });
+
+      // elTime.addEventListener("mouseover", () => {
+      //   elHourBoard.style.background = `radial-gradient(
+      //       circle at 30% 25%,
+      //       rgba(225, 255, 247, 0.5) 0%,
+      //       transparent 20%
+      //     ),
+      //     radial-gradient(circle at top, #2cd5ff, transparent),
+      //     radial-gradient(circle at bottom, #3e54e4, transparent),
+      //     radial-gradient(
+      //       circle,
+      //       rgb(152, 14, 170) 95%,
+      //       rgba(36, 60, 197, 0) 100%
+      //     )`;
+      // });
+
+      // elTime.addEventListener("mouseout", () => {
+      //   elHourBoard.style.background = `radial-gradient(
+      //       circle at 30% 25%,
+      //       rgba(225, 255, 247, 0) 0%,
+      //       transparent 20%
+      //     ),
+      //     radial-gradient(circle at top, #2cd5ff, transparent),
+      //     radial-gradient(circle at bottom, #3e54e4, transparent),
+      //     radial-gradient(
+      //       circle,
+      //       rgb(152, 14, 170) 95%,
+      //       rgba(36, 60, 197, 0) 100%
+      //     )`;
+      // });
+
+      // secBlob1 動畫
+      const secPath1 = document.querySelectorAll("#secBlob1 path");
+      const secPath2 = document.querySelectorAll("#secBlob2 path");
+      const secPath3 = document.querySelectorAll("#secBlob3 path");
+
+      secPath1.forEach((path1, index) => {
+        const path2 = secPath2[index];
+        const path3 = secPath3[index];
+
+        const tween1 = KUTE.fromTo(
+          path1,
+          { path: path1.getAttribute("d") },
+          { path: path2.getAttribute("d") },
+          { duration: 2500, yoyo: false }
+        );
+
+        const tween2 = KUTE.fromTo(
+          path1,
+          { path: path2.getAttribute("d") },
+          { path: path3.getAttribute("d") },
+          { duration: 2500, yoyo: false }
+        );
+
+        const tween3 = KUTE.fromTo(
+          path1,
+          { path: path3.getAttribute("d") },
+          { path: path1.getAttribute("d") },
+          { duration: 2500, yoyo: false }
+        );
+
+        tween1.chain(tween2);
+        tween2.chain(tween3);
+        tween3.chain(tween1);
+
+        tween1.start();
+      });
+    </script>
+  </body>
+</html>
