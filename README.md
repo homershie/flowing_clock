@@ -4,6 +4,8 @@
 
 這是一個使用 **JavaScript 原生語法與 CSS** 製作的液態風格時鐘作品，誕生於我學習 `setInterval` 的階段。從指針的每一次旋轉，到漸層背景與模糊光暈，這不只是時鐘，更是一場與時間共舞的視覺演出。
 
+[🔗 Live Demo](http://homershie.com/flowing_clock/)
+
 ---
 
 ## 🛠 技術亮點
@@ -27,18 +29,6 @@
 
 ---
 
-## 🔍 使用方法
-
-1. 將本專案 clone 下來：
-
-   ```bash
-   git clone https://github.com/your-username/liquid-clock.git
-   ```
-
-2. 直接打開 index.html 即可開始體驗。
-
----
-
 ## 📸 預覽畫面
 
 ![預覽畫面](./images/screenshot.png)
@@ -51,12 +41,9 @@
 - 強化 JavaScript 與 CSS 動畫整合技巧
 - 初步實踐 SVG 與動畫庫的搭配應用
 
+---
+
 ## 🪐 特別感謝
 
 - KUTE.js — SVG Path Morphing 支援
 - 時間本人 — 無聲流動，卻讓我們學會創造節奏
-
----
-
-[🔗 Live Demo](http://homershie.com/flowing_clock/)  
-![GitHub repo size](https://img.shields.io/github/repo-size/homershie/liquid-clock)
