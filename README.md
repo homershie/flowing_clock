@@ -1,4 +1,4 @@
-# ⏰ Liquid Clock — JS 動態時鐘實作
+# ⏰ Flowing Clock — JS 動態時鐘實作
 
 > _「時間，是一場不斷流動的光之舞。」_
 
