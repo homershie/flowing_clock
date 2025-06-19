@@ -4,7 +4,7 @@
 
 這是一個使用 **JavaScript 原生語法與 CSS** 製作的液態風格時鐘作品，誕生於我學習 `setInterval` 的階段。從指針的每一次旋轉，到漸層背景與模糊光暈，這不只是時鐘，更是一場與時間共舞的視覺演出。
 
-[🔗 Live Demo](http://homershie.com/flowing_clock/)
+[🔗 Live Demo](http://homershie.github.io/flowing_clock/)
 
 ---
 
